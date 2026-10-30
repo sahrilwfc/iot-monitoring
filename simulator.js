@@ -1,11 +1,15 @@
-
-const URL = 'http://localhost:3000/api/readings';
+// Simulator ESP32 (pengganti Wokwi): mengirim bacaan acak ke backend lewat HTTP POST.
+// Atur lewat env: SIM_URL, SIM_DEVICE_ID, SIM_INTERVAL_MS.
+const URL = process.env.SIM_URL || 'http://localhost:3000/api/readings';
+const DEVICE_ID = process.env.SIM_DEVICE_ID || 'ESP32-01';
+const INTERVAL_MS = Number(process.env.SIM_INTERVAL_MS || 5000);
 
 setInterval(async () => {
   const data = {
-    device_id: 'GH-01',
-    suhu: +(25 + Math.random() * 12).toFixed(1), // 25-37 °C
-    kelembapan: +(60 + Math.random() * 25).toFixed(1) // 60-85 %
+    device_id: DEVICE_ID,
+    room: 'Ruangan',
+    temperature: +(25 + Math.random() * 12).toFixed(1), // 25-37 °C
+    humidity: Math.round(60 + Math.random() * 25)       // 60-85 %
   };
 
   try {
@@ -30,4 +34,4 @@ setInterval(async () => {
     console.error('Gagal mengirim data sensor:', error.message);
   }
 
-}, 5000);
+}, INTERVAL_MS);
