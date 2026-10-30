@@ -8,8 +8,6 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// SQLite menyimpan waktu dalam UTC "YYYY-MM-DD HH:MM:SS".
-// Tambahkan versi ISO agar browser membacanya sebagai UTC.
 function withIso(row) {
   if (!row) return row;
   return { ...row, created_at_iso: row.created_at.replace(' ', 'T') + 'Z' };
