@@ -1,0 +1,36 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Containerfile
+    ports:
+      - "8081:3000"
+    environment:
+      DB_FILE: /data/iot.db
+      SERIAL_PATH: ${SERIAL_PATH:-/dev/ttyUSB0}
+      SERIAL_BAUD: ${SERIAL_BAUD:-115200}
+      SERIAL_DEVICE_ID: ${SERIAL_DEVICE_ID:-WEMOS-01}
+      SERIAL_INTERVAL_S: ${SERIAL_INTERVAL_S:-5}
+    volumes:
+      - iot-data:/data
+    devices:
+      - ${SERIAL_PATH:-/dev/ttyUSB0}:${SERIAL_PATH:-/dev/ttyUSB0}
+    group_add:
+      - keep-groups
+    security_opt:
+      - label=disable
+    restart: unless-stopped
+  simulator:
+    build:
+      context: .
+      dockerfile: Containerfile
+    command: ["node", "simulator.js"]
+    environment:
+      SIM_URL: http://app:3000/api/readings
+      SIM_DEVICE_ID: ${SIM_DEVICE_ID:-ESP32-01}
+      SIM_INTERVAL_MS: ${SIM_INTERVAL_MS:-5000}
+    depends_on:
+      - app
+    restart: unless-stopped
+volumes:
+  iot-data:

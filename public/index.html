@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Monitoring Ruangan</title>
+<link rel="preload" href="/vendor/jakarta/plus-jakarta-sans-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-thermo" viewBox="0 0 24 24"><path d="M14 14.8V5a2 2 0 0 0-4 0v9.8a4 4 0 1 0 4 0Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="17.5" r="1.6" fill="currentColor"/></symbol>
+  <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3.5s6 6.3 6 10.6a6 6 0 0 1-12 0C6 9.800 12 3.500 12 3.500Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-sensor" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 2.5v3M15 2.5v3M9 18.5v3M15 18.5v3M2.5 9h3M2.5 15h3M18.5 9h3M18.5 15h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M8 15l3.500-4 3 2.500L19 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 20h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.500" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 7.500V12l3 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.500 4.500 4.500L19 7.500" fill="none" stroke="currentColor" stroke-width="2.200" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 4 8.500 4.500L12 13 3.500 8.500 12 4Zm-8.500 8L12 16.500 20.500 12M3.500 15.500 12 20l8.500-4.500" fill="none" stroke="currentColor" stroke-width="1.800" stroke-linejoin="round" stroke-linecap="round"/></symbol>
+</svg>
+
+<div class="bg" aria-hidden="true">
+  <i class="layer dots" data-depth="6"></i>
+  <i class="layer orb orb-1" data-depth="18"></i>
+  <i class="layer orb orb-2" data-depth="30"></i>
+  <i class="layer orb orb-3" data-depth="12"></i>
+  <i class="layer orb orb-4" data-depth="46"></i>
+  <i class="layer orb orb-5" data-depth="38"></i>
+  <i class="layer grid-lines" data-depth="9"></i>
+  <i class="layer ring ring-1" data-depth="26"></i>
+  <i class="layer ring ring-2" data-depth="52"></i>
+  <i class="layer ring ring-3" data-depth="14"></i>
+  <i class="layer mist" data-depth="4"></i>
+</div>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="mark"><svg><use href="#i-thermo"/></svg></span>
+    <span class="brand-text"><b>Monitoring Ruangan</b><small>Ruang Monitoring</small></span>
+  </div>
+  <div class="top-right">
+    <span class="chip" id="clock"><svg><use href="#i-clock"/></svg><span>--:--:-- WIB</span></span>
+    <span class="pill" id="ws-pill" data-state="connecting"><i></i><span>Menghubungkan… socket.io</span></span>
+    <button class="btn-icon" id="parallax-toggle" type="button" aria-pressed="true" aria-label="Parallax" title="Parallax"><svg><use href="#i-layers"/></svg></button>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="hero-main">
+      <p class="eyebrow">Ruang Monitoring</p>
+      <h1>Suhu &amp; Kelembapan</h1>
+      <div class="chips">
+        <span class="chip" id="chip-parallax">Parallax aktif</span>
+        <span class="chip">WebSocket</span>
+        <span class="chip" id="chip-update">Update --:--:--</span>
+      </div>
+    </div>
+    <aside class="panel summary" data-tilt>
+      <dl>
+        <div><dt>Ruangan</dt><dd>Ruang Monitoring</dd></div>
+        <div><dt>Device</dt><dd id="sum-device">—</dd></div>
+        <div><dt>Rata-rata suhu</dt><dd id="sum-avg">—</dd></div>
+        <div><dt>Status</dt><dd id="sum-status" class="st">—</dd></div>
+      </dl>
+    </aside>
+  </section>
+
+  <section class="strip">
+    <div class="panel pad">
+      <p class="lbl"><svg><use href="#i-sensor"/></svg>Device <span class="mono">— device_id</span></p>
+      <div id="dd-mount"></div>
+      <p class="meta" id="dev-meta">—</p>
+    </div>
+    <div class="panel pad">
+      <p class="lbl">Foto Device Aktif</p>
+      <div class="photo" id="photo"></div>
+      <div class="photo-info" id="photo-info">
+        <b id="pi-board">—</b>
+        <span class="badge" id="pi-src">—</span>
+        <span class="mono" id="pi-id">—</span>
+        <span class="ok" id="pi-st">Aktif</span>
+      </div>
+    </div>
+    <div class="panel pad export">
+      <p class="lbl"><svg><use href="#i-down"/></svg>Ekspor CSV</p>
+      <p class="muted">Unduh riwayat device aktif.</p>
+      <button class="btn big" type="button" data-export><svg><use href="#i-down"/></svg>Ekspor CSV</button>
+      <p class="muted small" id="export-info">—</p>
+    </div>
+  </section>
+
+  <section class="panel pad th" id="p-th">
+    <div class="th-head"><h2>Ambang Batas</h2><span class="mono" id="th-dev">—</span></div>
+    <form id="th-form" novalidate>
+      <label>Suhu Maksimum (°C)<input id="th-tmax" type="number" step="0.1" inputmode="decimal" required></label>
+      <label>Suhu Minimum (°C)<input id="th-tmin" type="number" step="0.1" inputmode="decimal" required></label>
+      <label>Kelembapan Maksimum (% RH)<input id="th-hmax" type="number" step="1" inputmode="numeric" required></label>
+      <label>Kelembapan Minimum (% RH)<input id="th-hmin" type="number" step="1" inputmode="numeric" required></label>
+      <div class="th-actions">
+        <button class="btn" type="submit">Simpan</button>
+        <button class="btn ghost" type="button" id="th-reset">Reset Default</button>
+      </div>
+    </form>
+    <p class="th-status" id="th-status" role="status"></p>
+    <p class="th-active" id="th-active"></p>
+  </section>
+
+  <div class="alert" id="alert" role="alert" hidden></div>
+
+  <section class="panel pad chartcard" id="p-chart">
+    <div class="chart-head">
+      <div class="chart-title"><svg><use href="#i-chart"/></svg><h2 id="chart-title">Ruang Monitoring</h2><span class="badge live">Live</span></div>
+      <div class="chart-tools">
+        <div class="seg" role="group" aria-label="Rentang">
+          <button type="button" data-range="24h" aria-pressed="true">24 Jam</button>
+          <button type="button" data-range="7d" aria-pressed="false">7 Hari</button>
+        </div>
+        <button class="btn sm" type="button" data-export><svg><use href="#i-down"/></svg>Ekspor CSV</button>
+      </div>
+    </div>
+    <div class="legend">
+      <span><i class="sw t"></i>Suhu</span><span><i class="sw h"></i>Kelembapan</span>
+      <span><i class="sw a"></i>Ambang suhu maks/min</span>
+    </div>
+    <p class="axis-t">Suhu (°C)</p>
+    <div class="chart" id="chart-temp"></div>
+    <p class="axis-t">Kelembapan (% RH)</p>
+    <div class="chart" id="chart-hum"></div>
+    <div class="livebox">
+      <div class="live-head"><span>Live — WebSocket</span><span class="mono" id="live-range">—</span></div>
+      <div class="live" id="live"></div>
+    </div>
+    <div class="stats3">
+      <div><small>Suhu Terendah</small><b id="st-min">—</b><span id="st-min-t">—</span></div>
+      <div><small>Rata-rata</small><b id="st-avg">—</b><span id="st-avg-t">—</span></div>
+      <div><small>Suhu Tertinggi</small><b id="st-max">—</b><span id="st-max-t">—</span></div>
+    </div>
+  </section>
+
+  <h2 class="sec">Saat Ini</h2>
+  <section class="cards">
+    <article class="panel pad card-temp" data-tilt>
+      <p class="lbl"><svg><use href="#i-thermo"/></svg>Suhu Ruangan</p>
+      <p class="big"><span id="c-temp">—</span><small>°C</small></p>
+      <span class="chip st" id="c-temp-st">—</span>
+      <dl class="kv">
+        <div><dt>Terasa</dt><dd id="c-feels">—</dd></div>
+        <div><dt>Min 24 jam</dt><dd id="c-min">—</dd></div>
+        <div><dt>Maks 24 jam</dt><dd id="c-max">—</dd></div>
+        <div><dt>Ambang aktif</dt><dd id="c-th">—</dd></div>
+      </dl>
+    </article>
+    <article class="panel pad card-hum" data-tilt>
+      <p class="lbl"><svg><use href="#i-drop"/></svg>Kelembapan Ruangan</p>
+      <div class="hum-row">
+        <p class="big"><span id="c-hum">—</span><small>%</small></p>
+        <svg class="gauge" viewBox="0 0 100 100" aria-hidden="true"><circle class="g-bg" cx="50" cy="50" r="42"/><circle class="g-fg" id="g-fg" cx="50" cy="50" r="42"/></svg>
+      </div>
+      <div class="scale"><div class="scale-bar"><i id="hum-mark"></i></div><div class="scale-l"><span>Kering</span><span>0–100%</span><span>Lembap</span></div></div>
+      <span class="chip" id="c-hum-ideal">—</span>
+    </article>
+    <article class="panel pad card-detail">
+      <dl class="kv col">
+        <div><dt>Titik Embun</dt><dd id="d-dew">—</dd></div>
+        <div><dt>Tekanan</dt><dd id="d-press">—</dd></div>
+        <div><dt>Ventilasi</dt><dd id="d-vent">—</dd></div>
+        <div><dt>Update Terakhir</dt><dd id="d-last">—</dd></div>
+      </dl>
+    </article>
+    <article class="panel pad card-room">
+      <p class="lbl">Detail Ruangan</p>
+      <dl class="kv col">
+        <div><dt>Perangkat</dt><dd id="r-count">—</dd></div>
+        <div><dt>Device dipilih</dt><dd id="r-dev">—</dd></div>
+        <div><dt>Baterai</dt><dd id="r-bat">—</dd></div>
+        <div><dt>Sinyal Wi-Fi</dt><dd id="r-rssi">—</dd></div>
+      </dl>
+      <div class="scale small"><div class="scale-bar t"><b id="band"></b><i id="temp-mark"></i></div><div class="scale-l"><span>18 °C</span><span>Ideal</span><span>36 °C</span></div></div>
+    </article>
+  </section>
+
+  <section class="panel pad hist">
+    <div class="th-head"><h2>Riwayat</h2><button class="btn sm" type="button" data-export><svg><use href="#i-down"/></svg>Ekspor CSV</button></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Waktu</th><th>device_id</th><th>Suhu (°C)</th><th>Kelembapan (% RH)</th><th>Status</th></tr></thead>
+        <tbody id="hist-body"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<footer><span>Ruang Monitoring</span><span>WebSocket socket.io</span><span id="foot-par">Parallax aktif</span></footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script type="module" src="/js/app.js"></script>
+</body>
+</html>
